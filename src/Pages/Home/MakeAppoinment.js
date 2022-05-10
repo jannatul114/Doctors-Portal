@@ -1,12 +1,13 @@
 import React from 'react';
 import appoinment from '../../assets/images/appointment.png'
-import doctor from '../../assets/images/doctor-small.png'
+import doctor from '../../assets/images/doctor-small.png';
 import StartedButton from '../Shared/StartedButton';
+
 const MakeAppoinment = () => {
     return (
         <section style={{ backgroundImage: `url(${appoinment})` }} className='flex p-3 my-20 items-center '>
             <div className='flex-1 mt-[-100px] mb-[-12px] hidden lg:block'>
-                <img src={doctor} alt="" />
+                <img className='rounded-xl' src={doctor} alt="" />
             </div>
             <div className='flex-1 text-white'>
                 <h3 className='text-xl text-primary font-bold'>Appoinment</h3>
