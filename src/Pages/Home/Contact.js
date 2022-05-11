@@ -1,5 +1,6 @@
 import React from 'react';
 import appoinment from '../../assets/images/appointment.png'
+import StartedButton from '../Shared/StartedButton';
 
 const Contact = () => {
     return (
@@ -10,9 +11,16 @@ const Contact = () => {
 
             <div className='flex justify-center items-center my-7  p-2'>
                 <div className=''>
-                    <input type="text" placeholder="email" className="input input-bordered input-primary w-full max-w-md" />
-                    <input type="text" placeholder="Type here" className="input input-bordered input-primary w-full max-w-md my-6" />
-                    <input type="text" placeholder="Type here" className="input input-bordered input-primary w-full max-w-md" />
+                    <div className='flex justify-center'>
+                        <div>
+                            <input type="text" placeholder="Email" className="input input-bordered input-primary w-full max-w-md" />
+                            <input type="text" placeholder="Subject" className="input input-bordered input-primary w-full max-w-md my-6" />
+                        </div>
+                    </div>
+                    <textarea class="textarea w-full" placeholder="message"></textarea>
+                    <div className='flex justify-center'>
+                        <StartedButton>Submit</StartedButton>
+                    </div>
                 </div>
             </div>
         </section>
