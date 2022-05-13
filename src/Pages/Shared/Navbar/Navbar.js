@@ -1,11 +1,16 @@
+import { signOut } from 'firebase/auth';
 import React from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { Link } from 'react-router-dom';
+import auth from '../../../firebase.init';
 import CustomLink from '../CustomLink/CustomLink';
 
 const Navbar = () => {
+    const [user, error, loading] = useAuthState(auth);
+
     return (
 
-        <div className="navbar bg-base-100">
+        <div className="navbar bg-base-100 top-0 sticky z-20">
             <div className="navbar-start">
                 <div className="dropdown ">
                     <label tabIndex="0" className="btn btn-ghost lg:hidden">
@@ -17,7 +22,17 @@ const Navbar = () => {
                         <button className=' mx-2'>  <CustomLink to={'/appoinment'}>Appoinment</CustomLink></button>
                         <button className=' mx-2'><CustomLink to={'/reviews'}>Reviews</CustomLink></button>
                         <button className=' mx-2'><CustomLink to={'/contact'}>Contact Us</CustomLink></button>
-                        <button className=' mx-2'><CustomLink to={'/login'}>Login</CustomLink></button>
+                        {
+                            !user ? <button className=' mx-2'><CustomLink to={'/login'}>Login</CustomLink></button> : <button onClick={() => signOut(auth)} className=' mx-2'>Signout</button>
+                        }
+                        <div className="avatar">
+                            <div className="w-12 rounded-full">
+                                {
+                                    user && <img src={user?.photoURL ? user.photoURL : 'https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small/user-profile-icon-free-vector.jpg'} />
+                                }
+
+                            </div>
+                        </div>
                     </ul>
                 </div>
 
@@ -31,7 +46,18 @@ const Navbar = () => {
                     <button className=' mx-2'>  <CustomLink to={'/appoinment'}>Appoinment</CustomLink></button>
                     <button className=' mx-2'><CustomLink to={'/reviews'}>Reviews</CustomLink></button>
                     <button className=' mx-2'><CustomLink to={'/contact'}>Contact</CustomLink></button>
-                    <button className=' mx-2'><CustomLink to={'/login'}>Login</CustomLink></button>
+                    {
+                        !user ? <button className=' mx-2'><CustomLink to={'/login'}>Login</CustomLink></button> : <button onClick={() => signOut(auth)} className=' mx-2 btn btn-outline'>Signout</button>
+                    }
+                    <div className="avatar">
+                        <div className="w-12 rounded-full">
+                            {
+                                user && <img src={user?.photoURL ? user.photoURL : 'https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small/user-profile-icon-free-vector.jpg'} />
+                            }
+
+                        </div>
+                    </div>
+
                 </ul>
             </div>
 

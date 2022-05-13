@@ -1,58 +1,87 @@
-import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import auth from '../../../firebase.init';
-import { useSignInWithEmailAndPassword, useSignInWithGoogle, useUpdatePassword } from 'react-firebase-hooks/auth';
+import React, { useEffect } from 'react';
+import { useCreateUserWithEmailAndPassword, useUpdateProfile } from 'react-firebase-hooks/auth';
 import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
+import auth from '../../firebase.init';
+import SocialLogin from './SocialLogin';
 import 'react-toastify/dist/ReactToastify.css';
-import Loading from '../../Shared/Loading/Loading';
-import SocialLogin from '../SocialLogin';
-const Login = () => {
-    const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
-    const [updatePassword, updating, error2] = useUpdatePassword(auth);
-    const emailref = useRef()
+import Loading from '../Shared/Loading/Loading';
+import { sendEmailVerification } from 'firebase/auth';
+import { async } from '@firebase/util';
 
+const Registar = () => {
+    const navigate = useNavigate()
     const [
-        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
         user,
         loading,
         error,
-    ] = useSignInWithEmailAndPassword(auth);
+    ] = useCreateUserWithEmailAndPassword(auth, { sendEmailVerification: true });
+
+    const [updateProfile, updating, updateError] = useUpdateProfile(auth);
+
+
     const { register, formState: { errors }, handleSubmit } = useForm();
-    if (gUser) {
-        console.log(user);
-    }
 
-    useEffect(() => {
-        if (error || gError) {
-            toast.error(error.message)
-        }
-    }, [error, gError])
-
-
-    if (loading || gLoading || updating) {
-        return <Loading></Loading>
-    }
-    const onSubmit = data => {
+    const onSubmit = async data => {
         console.log(data)
-        signInWithEmailAndPassword(data.email, data.password)
+        await createUserWithEmailAndPassword(data.email, data.password)
+        await updateProfile({ displayName: data.name })
+        console.log('update done');
+        navigate('/appoinment')
     };
 
-    const { ref, ...rest } = register('email');
 
-    const handleresetPass = () => {
-        const email = emailref?.current?.value;
-        console.log(email);
+    if (user) {
+        console.log(user);
     }
+    useEffect(() => {
+        if (error) {
+            toast.error(error.message)
+        }
+
+        if (updateError) {
+            toast.error(updateError.message)
+        }
+
+    }, [error])
+
+    if (loading || updating) {
+        return <Loading></Loading>
+    }
+
     return (
         <div>
             <ToastContainer />
-            <div className='flex justify-center h-screen items-center'>
+            <div className='flex justify-center h-screen items-center mt-4'>
                 <div className="card w-96 bg-base-100 shadow-xl">
                     <div className="card-body">
-                        <h2 className="text-center text-3xl">Login</h2>
+                        <h2 className="text-center text-3xl">Signup</h2>
 
                         <form onSubmit={handleSubmit(onSubmit)}>
+
+
+                            <div className="form-control w-full max-w-xs">
+                                <label className="label">
+                                    <span className="label-text font-bold">Name</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Your Name"
+                                    className="input input-bordered w-full max-w-xs"
+                                    {...register("name", {
+                                        required: {
+                                            value: true,
+                                            message: 'Name is require'
+                                        }
+                                    })}
+                                />
+
+                            </div>
+
+
+
                             <div className="form-control w-full max-w-xs">
                                 <label className="label">
                                     <span className="label-text font-bold">Email</span>
@@ -61,10 +90,6 @@ const Login = () => {
                                     type="email"
                                     placeholder="Your Email"
                                     className="input input-bordered w-full max-w-xs"
-                                    ref={(e) => {
-                                        ref(e)
-                                        emailref.current = e
-                                    }}
                                     {...register("email", {
                                         required: {
                                             value: true,
@@ -106,11 +131,10 @@ const Login = () => {
                                 </label>
                             </div>
                             <div className="form-control w-full max-w-xs">
-                                <input type="submit" placeholder="Type here" className=" my-4 btn btn-assert w-full max-w-xs" value='Login' />
+                                <input type="submit" placeholder="Type here" className=" my-4 btn btn-assert w-full max-w-xs" value='Signup' />
                             </div>
                         </form>
-                        <p className='text-center'>New to doctors portal? <Link className='text-primary' to={'/registar'}>Create account</Link></p>
-                        <p className='text-center'>Forget password? <button onClick={() => handleresetPass} className='btn text-primary' to={'/registar'}>reset</button></p>
+                        <p className='text-center'>Already have an account? <Link className='text-primary' to={'/login'}>Login</Link></p>
                         <SocialLogin></SocialLogin>
                     </div>
                 </div>
@@ -119,4 +143,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Registar;

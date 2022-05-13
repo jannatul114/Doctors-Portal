@@ -17,7 +17,7 @@ const Contact = () => {
                             <input type="text" placeholder="Subject" className="input input-bordered input-primary w-full max-w-md my-6" />
                         </div>
                     </div>
-                    <textarea class="textarea w-full" placeholder="message"></textarea>
+                    <textarea className="textarea w-full" placeholder="message"></textarea>
                     <div className='flex justify-center'>
                         <StartedButton>Submit</StartedButton>
                     </div>

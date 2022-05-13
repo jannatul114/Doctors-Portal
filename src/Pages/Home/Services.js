@@ -4,7 +4,7 @@ import white from '../../assets/images/whitening.png';
 import floride from '../../assets/images/fluoride.png';
 const Services = () => {
     return (
-        <div>
+        <div className=''>
             <h1 className='text-2xl text-center font-bold text-secondary mt-12 mb-8'>OUR SERVICES</h1>
             <h1 className='text-4xl text-center font-bold mb-12'>Services We Provide</h1>
             <div className='flex justify-around'>
