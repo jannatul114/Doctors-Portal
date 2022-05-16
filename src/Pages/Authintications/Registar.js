@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useCreateUserWithEmailAndPassword, useUpdateProfile } from 'react-firebase-hooks/auth';
+import { useCreateUserWithEmailAndPassword, useSignInWithGoogle, useUpdateProfile } from 'react-firebase-hooks/auth';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
@@ -9,8 +9,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import Loading from '../Shared/Loading/Loading';
 import { sendEmailVerification } from 'firebase/auth';
 import { async } from '@firebase/util';
+import useToken from '../../hooks/useToken';
 
 const Registar = () => {
+    const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
     const navigate = useNavigate()
     const [
         createUserWithEmailAndPassword,
@@ -18,6 +20,7 @@ const Registar = () => {
         loading,
         error,
     ] = useCreateUserWithEmailAndPassword(auth, { sendEmailVerification: true });
+    const [token] = useToken(user || gUser)
 
     const [updateProfile, updating, updateError] = useUpdateProfile(auth);
 
@@ -25,29 +28,23 @@ const Registar = () => {
     const { register, formState: { errors }, handleSubmit } = useForm();
 
     const onSubmit = async data => {
-        console.log(data)
         await createUserWithEmailAndPassword(data.email, data.password)
         await updateProfile({ displayName: data.name })
-        console.log('update done');
-        navigate('/appoinment')
     };
 
 
-    if (user) {
-        console.log(user);
+    if (token) {
+        navigate('/appoinment')
+
     }
     useEffect(() => {
-        if (error) {
-            toast.error(error.message)
+        if (error || updateError || gError) {
+            toast.error(error.message || updateError.message || gError.message)
         }
 
-        if (updateError) {
-            toast.error(updateError.message)
-        }
+    }, [error, updateError, gError])
 
-    }, [error])
-
-    if (loading || updating) {
+    if (loading || updating || gLoading) {
         return <Loading></Loading>
     }
 
@@ -135,7 +132,10 @@ const Registar = () => {
                             </div>
                         </form>
                         <p className='text-center'>Already have an account? <Link className='text-primary' to={'/login'}>Login</Link></p>
-                        <SocialLogin></SocialLogin>
+                        <div className="flex flex-col w-full border-opacity-50">
+                            <div className="divider">OR</div>
+                            <button onClick={() => signInWithGoogle()} className='btn btn-outline border-solid border-assert'>continue with google</button>
+                        </div>
                     </div>
                 </div>
             </div>

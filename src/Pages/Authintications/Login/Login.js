@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import auth from '../../../firebase.init';
 import { useSignInWithEmailAndPassword, useSignInWithGoogle, useUpdatePassword } from 'react-firebase-hooks/auth';
 import { useForm } from 'react-hook-form';
@@ -7,30 +7,35 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from '../../Shared/Loading/Loading';
 import SocialLogin from '../SocialLogin';
+import useToken from '../../../hooks/useToken';
 const Login = () => {
     const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
-    const [updatePassword, updating, error2] = useUpdatePassword(auth);
-    const emailref = useRef()
-
+    const location = useLocation();
+    const navigate = useNavigate();
+    let from = location.state?.from?.pathname || "/";
     const [
         signInWithEmailAndPassword,
         user,
         loading,
         error,
     ] = useSignInWithEmailAndPassword(auth);
+
+    const [token] = useToken(user || gUser);
     const { register, formState: { errors }, handleSubmit } = useForm();
-    if (gUser) {
-        console.log(user);
-    }
 
     useEffect(() => {
         if (error || gError) {
-            toast.error(error.message)
+            toast.error(error.message || gError.message)
         }
     }, [error, gError])
 
 
-    if (loading || gLoading || updating) {
+    useEffect(() => {
+        if (token) {
+            navigate(from, { replace: true })
+        }
+    }, [token, from, navigate])
+    if (loading || gLoading) {
         return <Loading></Loading>
     }
     const onSubmit = data => {
@@ -41,8 +46,7 @@ const Login = () => {
     const { ref, ...rest } = register('email');
 
     const handleresetPass = () => {
-        const email = emailref?.current?.value;
-        console.log(email);
+
     }
     return (
         <div>
@@ -61,10 +65,7 @@ const Login = () => {
                                     type="email"
                                     placeholder="Your Email"
                                     className="input input-bordered w-full max-w-xs"
-                                    ref={(e) => {
-                                        ref(e)
-                                        emailref.current = e
-                                    }}
+
                                     {...register("email", {
                                         required: {
                                             value: true,
@@ -111,7 +112,10 @@ const Login = () => {
                         </form>
                         <p className='text-center'>New to doctors portal? <Link className='text-primary' to={'/registar'}>Create account</Link></p>
                         <p className='text-center'>Forget password? <button onClick={() => handleresetPass} className='btn text-primary' to={'/registar'}>reset</button></p>
-                        <SocialLogin></SocialLogin>
+                        <div className="flex flex-col w-full border-opacity-50">
+                            <div className="divider">OR</div>
+                            <button onClick={() => signInWithGoogle()} className='btn btn-outline border-solid border-assert'>continue with google</button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,33 +1,52 @@
 import { format } from 'date-fns';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { toast, ToastContainer } from 'react-toastify';
 import auth from '../../firebase.init';
-
-const BookingModal = ({ treatment, date, setTreatment }) => {
+import 'react-toastify/dist/ReactToastify.css';
+const BookingModal = ({ treatment, date, setTreatment, refetch }) => {
     const { name, slots, _id } = treatment;
     const [user] = useAuthState(auth)
-
+    const formettedDate = format(date, 'PP')
     const handleBooking = event => {
-
         event.preventDefault()
         const slot = event.target.slot.value;
-        const name = event.target.name.value;
-        const email = event.target.email.value;
-        const phone = event.target.phone.value;
-        const bookings = { name, email, phone, slot };
-        fetch('http://localhost:5000/bookings', {
+        console.log(_id, name, slot);
+        const booking = {
+            treatmentId: _id,
+            treatment: name,
+            date: formettedDate,
+            slot,
+            patient: user.email,
+            patientName: user.displayName,
+            phone: event.target.phone.value,
+        }
+
+        fetch('http://localhost:5000/booking', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json'
             },
-            body: JSON.stringify(bookings)
+            body: JSON.stringify(booking)
         })
+
             .then(res => res.json())
-            .then(data => console.log(data))
-        setTreatment(null)
+            .then(data => {
+                console.log(data)
+                if (data.success) {
+                    toast.success(`Appoinemnt is set, ${formettedDate} at ${slot}`)
+                }
+                else {
+                    toast.error(`Already have an appoinment on ${data.booking?.date} at ${data.booking?.slot}`)
+                }
+                refetch()
+                setTreatment(null)
+            })
+
     }
     return (
         <div>
+            <ToastContainer />
             <input type="checkbox" id="booking-modal" className="modal-toggle" />
             <div className="modal modal-bottom sm:modal-middle">
                 <div className="modal-box">
