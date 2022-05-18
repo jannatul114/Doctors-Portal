@@ -11,7 +11,7 @@ const MyAppoinments = () => {
 
     useEffect(() => {
         if (user) {
-            fetch(`http://localhost:5000/booking?patient=${user.email}`, {
+            fetch(`https://doctors-portal-server-mithila.herokuapp.com/booking?patient=${user.email}`, {
                 method: 'GET',
                 headers: {
                     'authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -22,7 +22,7 @@ const MyAppoinments = () => {
                     if (res.status === 401 || res.status === 403) {
                         signOut(auth)
                         localStorage.removeItem('accesstoken')
-                        navigate('/login')
+                        navigate('/')
                     }
 
                     return res.json()

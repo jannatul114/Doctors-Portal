@@ -6,6 +6,7 @@ import Login from './Pages/Authintications/Login/Login';
 import RequireAdmin from './Pages/Authintications/Login/RequireAdmin';
 import Registar from './Pages/Authintications/Registar';
 import RequireAuth from './Pages/Authintications/RequireAuth';
+import AddDoctor from './Pages/Dashboard/AddDoctor';
 import Dashboard from './Pages/Dashboard/Dashboard';
 import MyAppoinments from './Pages/Dashboard/MyAppoinments';
 import Myhistory from './Pages/Dashboard/MyHistory';
@@ -24,12 +25,14 @@ function App() {
         <Route path='/about' element={<About />}></Route>
         <Route path='/login' element={<Login></Login>}></Route>
         <Route path='/appoinment' element={<RequireAuth><Appoinment /></RequireAuth>}></Route>
-        <Route path='/dashboard' element={<RequireAuth><Dashboard ></Dashboard></RequireAuth>
+        <Route path='/dashboard' element={<RequireAuth>
+          <Dashboard ></Dashboard></RequireAuth>
         }>
           <Route index element={<MyAppoinments></MyAppoinments>}></Route>
           <Route path='myreview' element={<MyReview></MyReview>}></Route>
           <Route path='myhistory' element={<Myhistory></Myhistory>}></Route>
           <Route path='users' element={<RequireAdmin><Users></Users></RequireAdmin>}></Route>
+          <Route path='addDoctor' element={<RequireAdmin><AddDoctor /></RequireAdmin>}></Route>
         </Route>
         <Route path='/registar' element={<Registar></Registar>}></Route>
       </Routes>
